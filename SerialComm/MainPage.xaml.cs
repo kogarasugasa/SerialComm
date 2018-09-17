@@ -13,6 +13,9 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Devices.SerialCommunication;
+using System.Threading;
+using System.Threading.Tasks;
+using Windows.Storage.Streams;
 
 // 空白ページの項目テンプレートについては、https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x411 を参照してください
 
@@ -28,7 +31,7 @@ namespace SerialComm
             this.InitializeComponent();
         }
 
-        public async void Test()
+        public async Task<SerialDevice> OpenPort()
         {
             string portName = "COM5";
             string aqs = SerialDevice.GetDeviceSelector(portName);
@@ -37,10 +40,10 @@ namespace SerialComm
 
             if(myDevices.Count == 0)
             {
-                return;
+                return null;
             }
 
-            var device = await SerialDevice.FromIdAsync(myDevices[0].Id);
+            SerialDevice device = await SerialDevice.FromIdAsync(myDevices[0].Id);
             device.BaudRate = 9600;
             device.DataBits = 8;
             device.StopBits = SerialStopBitCount.One;
@@ -49,8 +52,22 @@ namespace SerialComm
             device.ReadTimeout = TimeSpan.FromMilliseconds(1000);
             device.WriteTimeout = TimeSpan.FromMilliseconds(1000);
 
+            return device;
+        }
 
+        public async Task Send(SerialDevice pDevice, string pMessage)
+        {
+            DataWriter dataWriteObject = new DataWriter(pDevice.OutputStream);
+            dataWriteObject.WriteString(pMessage);
+            await dataWriteObject.StoreAsync();
+        }
 
+        public async Task Receive(SerialDevice pDevice)
+        {
+            DataReader DataReadObject = new DataReader(pDevice.InputStream);
+            await DataReadObject.LoadAsync(128);
+            uint bytesToRead = DataReadObject.UnconsumedBufferLength;
+            string receiveString = DataReadObject.ReadString(bytesToRead);
         }
     }
 }

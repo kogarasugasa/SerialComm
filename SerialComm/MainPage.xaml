@@ -5,10 +5,13 @@
     xmlns:local="using:SerialComm"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-    <Grid>
-
+    mc:Ignorable="d">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Width="1000" Height="700" Margin="248,170,252,130">
+        <TextBlock HorizontalAlignment="Left" Margin="28,36,0,0" Text="送信" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" Width="150" Height="40" SelectionChanged="TextBlock_SelectionChanged"/>
+        <TextBox HorizontalAlignment="Left" Margin="28,68,0,0" Text="送信" VerticalAlignment="Top" FontSize="20" Width="400" Height="70"/>
+        <TextBlock HorizontalAlignment="Left" Margin="28,180,0,0" Text="受信" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="20" Width="150" Height="40" SelectionChanged="TextBlock_SelectionChanged"/>
+        <TextBox HorizontalAlignment="Left" Margin="28,212,0,0" Text="受信" VerticalAlignment="Top" FontSize="20" Width="400" Height="70"/>
+        <Button x:Name="BtnSend" Content="送信" HorizontalAlignment="Left" Margin="433,68,0,0" VerticalAlignment="Top" Height="70" Width="100" Click="BtnSend_Click"/>
+        <Button x:Name="BtnReceive" Content="受信" HorizontalAlignment="Left" Margin="433,212,0,0" VerticalAlignment="Top" Height="70" Width="100" Click="BtnReceive_Click"/>
     </Grid>
 </Page>

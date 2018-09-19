@@ -29,7 +29,40 @@ namespace SerialComm
         public MainPage()
         {
             this.InitializeComponent();
+
+            Loaded += MainPage_Loaded;
+            Unloaded += MainPage_UnLoaded;
         }
+
+        public ViewModelComm ViewModel { get; set; } = new ViewModelComm();
+        SerialDevice device;
+
+        //********************************************************************************
+        //イベント
+        //********************************************************************************
+        private async void MainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            await OpenPort();
+        }
+
+        private void MainPage_UnLoaded(object sender, RoutedEventArgs e)
+        {
+            device.Dispose();
+        }
+
+        private async void BtnSend_Click(object sender, RoutedEventArgs e)
+        {
+            await Send(device, this.ViewModel.SendText);
+        }
+
+        private async void BtnReceive_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.ReceiveText = await Receive(device);
+        }
+
+        //********************************************************************************
+        //メソッド
+        //********************************************************************************
 
         public async Task<SerialDevice> OpenPort()
         {
@@ -43,7 +76,7 @@ namespace SerialComm
                 return null;
             }
 
-            SerialDevice device = await SerialDevice.FromIdAsync(myDevices[0].Id);
+            device = await SerialDevice.FromIdAsync(myDevices[0].Id);
             device.BaudRate = 9600;
             device.DataBits = 8;
             device.StopBits = SerialStopBitCount.One;
@@ -62,12 +95,14 @@ namespace SerialComm
             await dataWriteObject.StoreAsync();
         }
 
-        public async Task Receive(SerialDevice pDevice)
+        public async Task<string> Receive(SerialDevice pDevice)
         {
             DataReader DataReadObject = new DataReader(pDevice.InputStream);
             await DataReadObject.LoadAsync(128);
             uint bytesToRead = DataReadObject.UnconsumedBufferLength;
-            string receiveString = DataReadObject.ReadString(bytesToRead);
+            return DataReadObject.ReadString(bytesToRead);
         }
+
+
     }
 }
